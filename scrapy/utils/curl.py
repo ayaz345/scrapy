@@ -10,8 +10,7 @@ from w3lib.http import basic_auth_header
 class DataAction(argparse.Action):
     def __call__(self, parser, namespace, values, option_string=None):
         value = str(values)
-        if value.startswith("$"):
-            value = value[1:]
+        value = value.removeprefix("$")
         setattr(namespace, self.dest, value)
 
 
@@ -94,7 +93,7 @@ def curl_to_request_kwargs(
     # needs the scheme to work
     parsed_url = urlparse(url)
     if not parsed_url.scheme:
-        url = "http://" + url
+        url = f"http://{url}"
 
     method = parsed_args.method or "GET"
 

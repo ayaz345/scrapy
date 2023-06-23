@@ -321,8 +321,7 @@ class ScrapyAgent:
         from twisted.internet import reactor
 
         bindaddress = request.meta.get("bindaddress") or self._bindAddress
-        proxy = request.meta.get("proxy")
-        if proxy:
+        if proxy := request.meta.get("proxy"):
             proxyScheme, proxyNetloc, proxyHost, proxyPort, proxyParams = _parse(proxy)
             scheme = _parse(request.url)[0]
             proxyHost = to_unicode(proxyHost)
@@ -367,10 +366,7 @@ class ScrapyAgent:
         headers = TxHeaders(request.headers)
         if isinstance(agent, self._TunnelingAgent):
             headers.removeHeader(b"Proxy-Authorization")
-        if request.body:
-            bodyproducer = _RequestBodyProducer(request.body)
-        else:
-            bodyproducer = None
+        bodyproducer = _RequestBodyProducer(request.body) if request.body else None
         start_time = time()
         d = agent.request(
             method, to_bytes(url, encoding="ascii"), headers, bodyproducer

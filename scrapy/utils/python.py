@@ -48,8 +48,7 @@ def iflatten(x):
     Similar to ``.flatten()``, but returns iterator instead"""
     for el in x:
         if is_listlike(el):
-            for el_ in iflatten(el):
-                yield el_
+            yield from iflatten(el)
         else:
             yield el
 
@@ -151,7 +150,7 @@ def re_rsearch(pattern, text, chunk_size=1024):
         pattern = re.compile(pattern)
 
     for chunk, offset in _chunk_iter():
-        matches = [match for match in pattern.finditer(chunk)]
+        matches = list(pattern.finditer(chunk))
         if matches:
             start, end = matches[-1].span()
             return offset + start, offset + end
@@ -209,9 +208,7 @@ def get_func_args(func, stripself=False):
                 continue
             args.append(name)
     else:
-        for name in sig.parameters.keys():
-            args.append(name)
-
+        args.extend(iter(sig.parameters.keys()))
     if stripself and args and args[0] == "self":
         args = args[1:]
     return args

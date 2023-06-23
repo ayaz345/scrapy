@@ -37,7 +37,7 @@ class TopLevelFormatter(logging.Filter):
         self.loggers = loggers or []
 
     def filter(self, record):
-        if any(record.name.startswith(logger + ".") for logger in self.loggers):
+        if any(record.name.startswith(f"{logger}.") for logger in self.loggers):
             record.name = record.name.split(".", 1)[0]
         return True
 
@@ -127,8 +127,7 @@ _scrapy_root_handler = None
 
 def _get_handler(settings):
     """Return a log handler object according to settings"""
-    filename = settings.get("LOG_FILE")
-    if filename:
+    if filename := settings.get("LOG_FILE"):
         mode = "a" if settings.getbool("LOG_FILE_APPEND") else "w"
         encoding = settings.get("LOG_ENCODING")
         handler = logging.FileHandler(filename, mode=mode, encoding=encoding)

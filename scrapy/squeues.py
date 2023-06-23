@@ -26,14 +26,16 @@ def _with_mkdir(queue_class):
 
 
 def _serializable_queue(queue_class, serialize, deserialize):
+
+
+
     class SerializableQueue(queue_class):
         def push(self, obj):
             s = serialize(obj)
             super().push(s)
 
         def pop(self):
-            s = super().pop()
-            if s:
+            if s := super().pop():
                 return deserialize(s)
 
         def peek(self):
@@ -52,10 +54,14 @@ def _serializable_queue(queue_class, serialize, deserialize):
             if s:
                 return deserialize(s)
 
+
     return SerializableQueue
 
 
 def _scrapy_serialization_queue(queue_class):
+
+
+
     class ScrapyRequestQueue(queue_class):
         def __init__(self, crawler, key):
             self.spider = crawler.spider
@@ -71,9 +77,7 @@ def _scrapy_serialization_queue(queue_class):
 
         def pop(self):
             request = super().pop()
-            if not request:
-                return None
-            return request_from_dict(request, spider=self.spider)
+            return None if not request else request_from_dict(request, spider=self.spider)
 
         def peek(self):
             """Returns the next object to be returned by :meth:`pop`,
@@ -83,9 +87,8 @@ def _scrapy_serialization_queue(queue_class):
             not implement a ``peek`` method, which is optional for queues.
             """
             request = super().peek()
-            if not request:
-                return None
-            return request_from_dict(request, spider=self.spider)
+            return None if not request else request_from_dict(request, spider=self.spider)
+
 
     return ScrapyRequestQueue
 

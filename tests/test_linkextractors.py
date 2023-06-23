@@ -36,7 +36,7 @@ class Base:
             page4_url = "http://example.com/page%204.html"
 
             self.assertEqual(
-                [link for link in lx.extract_links(self.response)],
+                list(lx.extract_links(self.response)),
                 [
                     Link(url="http://example.com/sample1.html", text=""),
                     Link(url="http://example.com/sample2.html", text="sample 2"),
@@ -54,7 +54,7 @@ class Base:
         def test_extract_filter_allow(self):
             lx = self.extractor_cls(allow=("sample",))
             self.assertEqual(
-                [link for link in lx.extract_links(self.response)],
+                list(lx.extract_links(self.response)),
                 [
                     Link(url="http://example.com/sample1.html", text=""),
                     Link(url="http://example.com/sample2.html", text="sample 2"),
@@ -69,7 +69,7 @@ class Base:
         def test_extract_filter_allow_with_duplicates(self):
             lx = self.extractor_cls(allow=("sample",), unique=False)
             self.assertEqual(
-                [link for link in lx.extract_links(self.response)],
+                list(lx.extract_links(self.response)),
                 [
                     Link(url="http://example.com/sample1.html", text=""),
                     Link(url="http://example.com/sample2.html", text="sample 2"),
@@ -92,7 +92,7 @@ class Base:
         def test_extract_filter_allow_with_duplicates_canonicalize(self):
             lx = self.extractor_cls(allow=("sample",), unique=False, canonicalize=True)
             self.assertEqual(
-                [link for link in lx.extract_links(self.response)],
+                list(lx.extract_links(self.response)),
                 [
                     Link(url="http://example.com/sample1.html", text=""),
                     Link(url="http://example.com/sample2.html", text="sample 2"),
@@ -115,7 +115,7 @@ class Base:
         def test_extract_filter_allow_no_duplicates_canonicalize(self):
             lx = self.extractor_cls(allow=("sample",), unique=True, canonicalize=True)
             self.assertEqual(
-                [link for link in lx.extract_links(self.response)],
+                list(lx.extract_links(self.response)),
                 [
                     Link(url="http://example.com/sample1.html", text=""),
                     Link(url="http://example.com/sample2.html", text="sample 2"),
@@ -126,7 +126,7 @@ class Base:
         def test_extract_filter_allow_and_deny(self):
             lx = self.extractor_cls(allow=("sample",), deny=("3",))
             self.assertEqual(
-                [link for link in lx.extract_links(self.response)],
+                list(lx.extract_links(self.response)),
                 [
                     Link(url="http://example.com/sample1.html", text=""),
                     Link(url="http://example.com/sample2.html", text="sample 2"),
@@ -136,7 +136,7 @@ class Base:
         def test_extract_filter_allowed_domains(self):
             lx = self.extractor_cls(allow_domains=("google.com",))
             self.assertEqual(
-                [link for link in lx.extract_links(self.response)],
+                list(lx.extract_links(self.response)),
                 [
                     Link(url="http://www.google.com/something", text=""),
                 ],
@@ -147,7 +147,7 @@ class Base:
 
             lx = self.extractor_cls(allow="sample")
             self.assertEqual(
-                [link for link in lx.extract_links(self.response)],
+                list(lx.extract_links(self.response)),
                 [
                     Link(url="http://example.com/sample1.html", text=""),
                     Link(url="http://example.com/sample2.html", text="sample 2"),
@@ -161,7 +161,7 @@ class Base:
 
             lx = self.extractor_cls(allow="sample", deny="3")
             self.assertEqual(
-                [link for link in lx.extract_links(self.response)],
+                list(lx.extract_links(self.response)),
                 [
                     Link(url="http://example.com/sample1.html", text=""),
                     Link(url="http://example.com/sample2.html", text="sample 2"),
@@ -170,7 +170,7 @@ class Base:
 
             lx = self.extractor_cls(allow_domains="google.com")
             self.assertEqual(
-                [link for link in lx.extract_links(self.response)],
+                list(lx.extract_links(self.response)),
                 [
                     Link(url="http://www.google.com/something", text=""),
                 ],
@@ -178,7 +178,7 @@ class Base:
 
             lx = self.extractor_cls(deny_domains="example.com")
             self.assertEqual(
-                [link for link in lx.extract_links(self.response)],
+                list(lx.extract_links(self.response)),
                 [
                     Link(url="http://www.google.com/something", text=""),
                 ],
@@ -264,7 +264,7 @@ class Base:
         def test_restrict_xpaths(self):
             lx = self.extractor_cls(restrict_xpaths=('//div[@id="subwrapper"]',))
             self.assertEqual(
-                [link for link in lx.extract_links(self.response)],
+                list(lx.extract_links(self.response)),
                 [
                     Link(url="http://example.com/sample1.html", text=""),
                     Link(url="http://example.com/sample2.html", text="sample 2"),
@@ -336,7 +336,7 @@ class Base:
                 restrict_css=("#subwrapper + a",),
             )
             self.assertEqual(
-                [link for link in lx.extract_links(self.response)],
+                list(lx.extract_links(self.response)),
                 [
                     Link(url="http://example.com/sample1.html", text=""),
                     Link(url="http://example.com/sample2.html", text="sample 2"),
@@ -435,7 +435,7 @@ class Base:
             def process_value(value):
                 m = re.search(r"javascript:goToPage\('(.*?)'", value)
                 if m:
-                    return m.group(1)
+                    return m[1]
 
             lx = self.extractor_cls(process_value=process_value)
             self.assertEqual(
@@ -704,7 +704,7 @@ class Base:
             response = HtmlResponse("http://example.org/index.html", body=html)
             lx = self.extractor_cls()
             self.assertEqual(
-                [link for link in lx.extract_links(response)],
+                list(lx.extract_links(response)),
                 [
                     Link(
                         url="http://example.org/item1.html",
@@ -757,13 +757,17 @@ class LxmlLinkExtractorTestCase(Base.LinkExtractorTestCase):
         response = HtmlResponse("http://example.org/index.html", body=html)
         lx = self.extractor_cls()
         self.assertEqual(
-            [link for link in lx.extract_links(response)],
+            list(lx.extract_links(response)),
             [
                 Link(
-                    url="http://example.org/item1.html", text="Item 1", nofollow=False
+                    url="http://example.org/item1.html",
+                    text="Item 1",
+                    nofollow=False,
                 ),
                 Link(
-                    url="http://example.org/item3.html", text="Item 3", nofollow=False
+                    url="http://example.org/item3.html",
+                    text="Item 3",
+                    nofollow=False,
                 ),
             ],
         )
@@ -778,7 +782,7 @@ class LxmlLinkExtractorTestCase(Base.LinkExtractorTestCase):
         # Simple text inclusion test
         lx = self.extractor_cls(restrict_text="dog")
         self.assertEqual(
-            [link for link in lx.extract_links(response)],
+            list(lx.extract_links(response)),
             [
                 Link(
                     url="http://example.org/item2.html",
@@ -790,7 +794,7 @@ class LxmlLinkExtractorTestCase(Base.LinkExtractorTestCase):
         # Unique regex test
         lx = self.extractor_cls(restrict_text=r"of.*dog")
         self.assertEqual(
-            [link for link in lx.extract_links(response)],
+            list(lx.extract_links(response)),
             [
                 Link(
                     url="http://example.org/item2.html",
@@ -802,7 +806,7 @@ class LxmlLinkExtractorTestCase(Base.LinkExtractorTestCase):
         # Multiple regex test
         lx = self.extractor_cls(restrict_text=[r"of.*dog", r"of.*cat"])
         self.assertEqual(
-            [link for link in lx.extract_links(response)],
+            list(lx.extract_links(response)),
             [
                 Link(
                     url="http://example.org/item1.html",
@@ -836,7 +840,7 @@ class LxmlLinkExtractorTestCase(Base.LinkExtractorTestCase):
         response = HtmlResponse("http://example.org/index.html", body=html)
         lx = self.extractor_cls()
         self.assertEqual(
-            [link for link in lx.extract_links(response)],
+            list(lx.extract_links(response)),
             [
                 Link(
                     url="http://example.org/item2.html",

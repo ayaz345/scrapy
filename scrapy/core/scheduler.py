@@ -22,10 +22,10 @@ class BaseSchedulerMeta(type):
     Metaclass to check scheduler classes against the necessary interface
     """
 
-    def __instancecheck__(cls, instance: Any) -> bool:
-        return cls.__subclasscheck__(type(instance))
+    def __instancecheck__(self, instance: Any) -> bool:
+        return self.__subclasscheck__(type(instance))
 
-    def __subclasscheck__(cls, subclass: type) -> bool:
+    def __subclasscheck__(self, subclass: type) -> bool:
         return (
             hasattr(subclass, "has_pending_requests")
             and callable(subclass.has_pending_requests)
@@ -309,9 +309,7 @@ class Scheduler(BaseScheduler):
         self.mqs.push(request)
 
     def _dqpop(self) -> Optional[Request]:
-        if self.dqs is not None:
-            return self.dqs.pop()
-        return None
+        return self.dqs.pop() if self.dqs is not None else None
 
     def _mq(self):
         """Create a new priority queue instance, with in-memory storage"""

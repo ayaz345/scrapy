@@ -28,7 +28,11 @@ class HttpAuthMiddleware:
         pwd = getattr(spider, "http_pass", "")
         if usr or pwd:
             self.auth = basic_auth_header(usr, pwd)
-            if not hasattr(spider, "http_auth_domain"):
+            if hasattr(spider, "http_auth_domain"):
+                self.domain = spider.http_auth_domain
+                self.domain_unset = False
+
+            else:
                 warnings.warn(
                     "Using HttpAuthMiddleware without http_auth_domain is deprecated and can cause security "
                     "problems if the spider makes requests to several different domains. http_auth_domain "
@@ -37,9 +41,6 @@ class HttpAuthMiddleware:
                     category=ScrapyDeprecationWarning,
                 )
                 self.domain_unset = True
-            else:
-                self.domain = spider.http_auth_domain
-                self.domain_unset = False
 
     def process_request(self, request, spider):
         auth = getattr(self, "auth", None)

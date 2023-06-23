@@ -121,9 +121,7 @@ class LxmlParserLinkExtractor:
         return self._deduplicate_if_needed(links)
 
     def _deduplicate_if_needed(self, links):
-        if self.unique:
-            return unique_list(links, key=self.link_key)
-        return links
+        return unique_list(links, key=self.link_key) if self.unique else links
 
 
 class LxmlLinkExtractor:
@@ -173,7 +171,7 @@ class LxmlLinkExtractor:
         if deny_extensions is None:
             deny_extensions = IGNORED_EXTENSIONS
         self.canonicalize = canonicalize
-        self.deny_extensions = {"." + e for e in arg_to_iter(deny_extensions)}
+        self.deny_extensions = {f".{e}" for e in arg_to_iter(deny_extensions)}
         self.restrict_text = [
             x if isinstance(x, _re_type) else re.compile(x)
             for x in arg_to_iter(restrict_text)
@@ -197,9 +195,7 @@ class LxmlLinkExtractor:
             parsed_url, self.deny_extensions
         ):
             return False
-        if self.restrict_text and not _matches(link.text, self.restrict_text):
-            return False
-        return True
+        return bool(not self.restrict_text or _matches(link.text, self.restrict_text))
 
     def matches(self, url):
         if self.allow_domains and not url_is_from_any_domain(url, self.allow_domains):
@@ -247,6 +243,4 @@ class LxmlLinkExtractor:
         for doc in docs:
             links = self._extract_links(doc, response.url, response.encoding, base_url)
             all_links.extend(self._process_links(links))
-        if self.link_extractor.unique:
-            return unique_list(all_links)
-        return all_links
+        return unique_list(all_links) if self.link_extractor.unique else all_links

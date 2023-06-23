@@ -73,10 +73,7 @@ class ScrapyPriorityQueue:
 
     def qfactory(self, key):
         return create_instance(
-            self.downstream_queue_cls,
-            None,
-            self.crawler,
-            self.key + "/" + str(key),
+            self.downstream_queue_cls, None, self.crawler, f"{self.key}/{str(key)}"
         )
 
     def priority(self, request):
@@ -100,7 +97,7 @@ class ScrapyPriorityQueue:
             del self.queues[self.curprio]
             q.close()
             prios = [p for p, q in self.queues.items() if q]
-            self.curprio = min(prios) if prios else None
+            self.curprio = min(prios, default=None)
         return m
 
     def peek(self):
@@ -183,7 +180,7 @@ class DownloaderAwarePriorityQueue:
         return ScrapyPriorityQueue(
             self.crawler,
             self.downstream_queue_cls,
-            self.key + "/" + _path_safe(slot),
+            f"{self.key}/{_path_safe(slot)}",
             startprios,
         )
 

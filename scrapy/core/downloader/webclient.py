@@ -37,7 +37,7 @@ def _parse(url: str) -> Tuple[bytes, bytes, bytes, int, bytes]:
     """
     url = url.strip()
     if not re.match(r"^\w+://", url):
-        url = "//" + url
+        url = f"//{url}"
     parsed = urlparse(url)
     return _parsed_url_args(parsed)
 
@@ -130,8 +130,7 @@ class ScrapyHTTPClientFactory(ClientFactory):
         self.scheme, self.netloc, self.host, self.port, self.path = _parsed_url_args(
             parsed
         )
-        proxy = request.meta.get("proxy")
-        if proxy:
+        if proxy := request.meta.get("proxy"):
             self.scheme, _, self.host, self.port, _ = _parse(proxy)
             self.path = self.url
 

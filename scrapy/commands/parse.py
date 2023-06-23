@@ -151,10 +151,7 @@ class Command(BaseRunSpiderCommand):
 
     def print_requests(self, lvl=None, colour=True):
         if lvl is None:
-            if self.requests:
-                requests = self.requests[max(self.requests)]
-            else:
-                requests = []
+            requests = self.requests[max(self.requests)] if self.requests else []
         else:
             requests = self.requests.get(lvl, [])
 
@@ -189,8 +186,9 @@ class Command(BaseRunSpiderCommand):
 
     def run_callback(self, response, callback, cb_kwargs=None):
         cb_kwargs = cb_kwargs or {}
-        d = maybeDeferred(self.iterate_spider_output, callback(response, **cb_kwargs))
-        return d
+        return maybeDeferred(
+            self.iterate_spider_output, callback(response, **cb_kwargs)
+        )
 
     def get_callback_from_rules(self, spider, response):
         if getattr(spider, "rules", None):
@@ -336,7 +334,7 @@ class Command(BaseRunSpiderCommand):
 
     def run(self, args, opts):
         # parse arguments
-        if not len(args) == 1 or not is_url(args[0]):
+        if len(args) != 1 or not is_url(args[0]):
             raise UsageError()
         else:
             url = args[0]

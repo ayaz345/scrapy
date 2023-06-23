@@ -443,13 +443,13 @@ class MediaPipelineDeprecatedMethodsTestCase(unittest.TestCase):
 
     def _assert_method_called_with_warnings(self, method, message, warnings):
         self.assertIn(method, self.pipe._mockcalled)
-        warningShown = False
-        for warning in warnings:
-            if (
+        warningShown = any(
+            (
                 warning["message"] == message
                 and warning["category"] == ScrapyDeprecationWarning
-            ):
-                warningShown = True
+            )
+            for warning in warnings
+        )
         self.assertTrue(warningShown)
 
     @inlineCallbacks

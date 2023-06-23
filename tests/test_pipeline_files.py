@@ -352,7 +352,7 @@ class FilesPipelineTestCaseCustomSettings(unittest.TestCase):
             return settings
 
         return {
-            prefix.upper() + "_" + k if k != "FILES_STORE" else k: v
+            f"{prefix.upper()}_{k}" if k != "FILES_STORE" else k: v
             for k, v in settings.items()
         }
 
@@ -435,7 +435,7 @@ class FilesPipelineTestCaseCustomSettings(unittest.TestCase):
         user_pipeline = UserDefinedFilesPipeline.from_settings(Settings(settings))
         for pipe_attr, settings_attr, pipe_inst_attr in self.file_cls_attr_settings_map:
             # Values from settings for custom pipeline should be set on pipeline instance.
-            custom_value = settings.get(prefix + "_" + settings_attr)
+            custom_value = settings.get(f"{prefix}_{settings_attr}")
             self.assertNotEqual(custom_value, self.default_cls_settings[pipe_attr])
             self.assertEqual(getattr(user_pipeline, pipe_inst_attr), custom_value)
 
@@ -453,7 +453,7 @@ class FilesPipelineTestCaseCustomSettings(unittest.TestCase):
             settings_attr,
             pipe_inst_attr,
         ) in self.file_cls_attr_settings_map:
-            custom_value = settings.get(prefix + "_" + settings_attr)
+            custom_value = settings.get(f"{prefix}_{settings_attr}")
             self.assertNotEqual(custom_value, self.default_cls_settings[pipe_cls_attr])
             self.assertEqual(getattr(user_pipeline, pipe_inst_attr), custom_value)
 

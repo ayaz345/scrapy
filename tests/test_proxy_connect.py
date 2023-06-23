@@ -46,9 +46,8 @@ sys.exit(mitmdump())
             stdout=PIPE,
         )
         line = self.proc.stdout.readline().decode("utf-8")
-        host_port = re.search(r"listening at http://([^:]+:\d+)", line).group(1)
-        address = f"http://{self.auth_user}:{self.auth_pass}@{host_port}"
-        return address
+        host_port = re.search(r"listening at http://([^:]+:\d+)", line)[1]
+        return f"http://{self.auth_user}:{self.auth_pass}@{host_port}"
 
     def stop(self):
         self.proc.kill()

@@ -115,8 +115,7 @@ class FTPDownloadHandler:
     def _failed(self, result, request):
         message = result.getErrorMessage()
         if result.type == CommandFailed:
-            m = _CODE_RE.search(message)
-            if m:
+            if m := _CODE_RE.search(message):
                 ftpcode = m.group()
                 httpcode = self.CODE_MAPPING.get(ftpcode, self.CODE_MAPPING["default"])
                 return Response(

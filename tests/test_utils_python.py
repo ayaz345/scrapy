@@ -41,7 +41,6 @@ class MutableAsyncChainTest(unittest.TestCase):
     @staticmethod
     async def g2():
         return
-        yield
 
     @staticmethod
     async def g3():

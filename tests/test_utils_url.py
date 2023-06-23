@@ -40,7 +40,7 @@ class UrlUtilsTest(unittest.TestCase):
         )
         self.assertFalse(url_is_from_any_domain(url, ["testdomain.com"]))
         self.assertFalse(
-            url_is_from_any_domain(url + ".testdomain.com", ["testdomain.com"])
+            url_is_from_any_domain(f"{url}.testdomain.com", ["testdomain.com"])
         )
 
     def test_url_is_from_spider(self):
@@ -135,7 +135,7 @@ class UrlUtilsTest(unittest.TestCase):
         )
 
     def test_url_has_any_extension(self):
-        deny_extensions = {"." + e for e in arg_to_iter(IGNORED_EXTENSIONS)}
+        deny_extensions = {f".{e}" for e in arg_to_iter(IGNORED_EXTENSIONS)}
         self.assertTrue(
             url_has_any_extension(
                 "http://www.example.com/archive.tar.gz", deny_extensions
@@ -327,8 +327,6 @@ def create_guess_scheme_t(args):
 def create_skipped_scheme_t(args):
     def do_expected(self):
         raise unittest.SkipTest(args[2])
-        url = guess_scheme(args[0])
-        assert url.startswith(args[1])
 
     return do_expected
 

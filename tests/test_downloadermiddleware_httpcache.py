@@ -45,8 +45,7 @@ class _BaseTest(unittest.TestCase):
             "HTTPCACHE_IGNORE_HTTP_CODES": [],
             "HTTPCACHE_POLICY": self.policy_class,
             "HTTPCACHE_STORAGE": self.storage_class,
-        }
-        settings.update(new_settings)
+        } | new_settings
         return Settings(settings)
 
     @contextmanager
@@ -390,18 +389,16 @@ class RFC2616PolicyTest(DefaultStorageTest):
             (200, {"Date": self.yesterday, "Expires": self.tomorrow}),
             (200, {"Date": self.yesterday, "Cache-Control": "max-age=86405"}),
             (200, {"Age": "299", "Cache-Control": "max-age=300"}),
-            # Obey max-age if present over any others
             (
                 200,
                 {
                     "Date": self.today,
                     "Age": "86405",
-                    "Cache-Control": "max-age=" + str(86400 * 3),
+                    "Cache-Control": f"max-age={str(86400 * 3)}",
                     "Expires": self.yesterday,
                     "Last-Modified": self.yesterday,
                 },
             ),
-            # obey Expires if max-age is not present
             (
                 200,
                 {
@@ -412,9 +409,7 @@ class RFC2616PolicyTest(DefaultStorageTest):
                     "Last-Modified": self.yesterday,
                 },
             ),
-            # Default missing Date header to right now
             (200, {"Expires": self.tomorrow}),
-            # Firefox - Expires if age is greater than 10% of (Date - Last-Modified)
             (
                 200,
                 {
@@ -423,7 +418,6 @@ class RFC2616PolicyTest(DefaultStorageTest):
                     "Age": str(86400 / 10 - 1),
                 },
             ),
-            # Firefox - Set one year maxage to permanent redirects missing expiration info
             (300, {}),
             (301, {}),
             (308, {}),

@@ -26,16 +26,14 @@ class XmliterTestCase(unittest.TestCase):
         """
 
         response = XmlResponse(url="http://example.com", body=body)
-        attrs = []
-        for x in self.xmliter(response, "product"):
-            attrs.append(
-                (
-                    x.attrib["id"],
-                    x.xpath("name/text()").getall(),
-                    x.xpath("./type/text()").getall(),
-                )
+        attrs = [
+            (
+                x.attrib["id"],
+                x.xpath("name/text()").getall(),
+                x.xpath("./type/text()").getall(),
             )
-
+            for x in self.xmliter(response, "product")
+        ]
         self.assertEqual(
             attrs, [("001", ["Name 1"], ["Type 1"]), ("002", ["Name 2"], ["Type 2"])]
         )
@@ -97,16 +95,14 @@ class XmliterTestCase(unittest.TestCase):
             # Unicode body needs encoding information
             XmlResponse(url="http://example.com", body=body, encoding="utf-8"),
         ):
-            attrs = []
-            for x in self.xmliter(r, "þingflokkur"):
-                attrs.append(
-                    (
-                        x.attrib["id"],
-                        x.xpath("./skammstafanir/stuttskammstöfun/text()").getall(),
-                        x.xpath("./tímabil/fyrstaþing/text()").getall(),
-                    )
+            attrs = [
+                (
+                    x.attrib["id"],
+                    x.xpath("./skammstafanir/stuttskammstöfun/text()").getall(),
+                    x.xpath("./tímabil/fyrstaþing/text()").getall(),
                 )
-
+                for x in self.xmliter(r, "þingflokkur")
+            ]
             self.assertEqual(
                 attrs,
                 [("26", ["-"], ["80"]), ("21", ["Ab"], ["76"]), ("27", ["A"], ["27"])],
@@ -333,7 +329,7 @@ class UtilsCsvTestCase(unittest.TestCase):
         response = TextResponse(url="http://example.com/", body=body)
         csv = csviter(response)
 
-        result = [row for row in csv]
+        result = list(csv)
         self.assertEqual(
             result,
             [
@@ -355,10 +351,14 @@ class UtilsCsvTestCase(unittest.TestCase):
         csv = csviter(response, delimiter="\t")
 
         self.assertEqual(
-            [row for row in csv],
+            list(csv),
             [
                 {"id": "1", "name": "alpha", "value": "foobar"},
-                {"id": "2", "name": "unicode", "value": "\xfan\xedc\xf3d\xe9\u203d"},
+                {
+                    "id": "2",
+                    "name": "unicode",
+                    "value": "\xfan\xedc\xf3d\xe9\u203d",
+                },
                 {"id": "3", "name": "multi", "value": "foo\nbar"},
                 {"id": "4", "name": "empty", "value": ""},
             ],
@@ -372,10 +372,14 @@ class UtilsCsvTestCase(unittest.TestCase):
         csv1 = csviter(response1, quotechar="'")
 
         self.assertEqual(
-            [row for row in csv1],
+            list(csv1),
             [
                 {"id": "1", "name": "alpha", "value": "foobar"},
-                {"id": "2", "name": "unicode", "value": "\xfan\xedc\xf3d\xe9\u203d"},
+                {
+                    "id": "2",
+                    "name": "unicode",
+                    "value": "\xfan\xedc\xf3d\xe9\u203d",
+                },
                 {"id": "3", "name": "multi", "value": "foo\nbar"},
                 {"id": "4", "name": "empty", "value": ""},
             ],
@@ -385,10 +389,14 @@ class UtilsCsvTestCase(unittest.TestCase):
         csv2 = csviter(response2, delimiter="|", quotechar="'")
 
         self.assertEqual(
-            [row for row in csv2],
+            list(csv2),
             [
                 {"id": "1", "name": "alpha", "value": "foobar"},
-                {"id": "2", "name": "unicode", "value": "\xfan\xedc\xf3d\xe9\u203d"},
+                {
+                    "id": "2",
+                    "name": "unicode",
+                    "value": "\xfan\xedc\xf3d\xe9\u203d",
+                },
                 {"id": "3", "name": "multi", "value": "foo\nbar"},
                 {"id": "4", "name": "empty", "value": ""},
             ],
@@ -400,7 +408,7 @@ class UtilsCsvTestCase(unittest.TestCase):
         csv = csviter(response)
 
         self.assertEqual(
-            [row for row in csv],
+            list(csv),
             [
                 {"'id'": "1", "'name'": "'alpha'", "'value'": "'foobar'"},
                 {
@@ -419,10 +427,14 @@ class UtilsCsvTestCase(unittest.TestCase):
         csv = csviter(response, delimiter="\t")
 
         self.assertEqual(
-            [row for row in csv],
+            list(csv),
             [
                 {"id": "1", "name": "alpha", "value": "foobar"},
-                {"id": "2", "name": "unicode", "value": "\xfan\xedc\xf3d\xe9\u203d"},
+                {
+                    "id": "2",
+                    "name": "unicode",
+                    "value": "\xfan\xedc\xf3d\xe9\u203d",
+                },
                 {"id": "3", "name": "multi", "value": "foo\nbar"},
                 {"id": "4", "name": "empty", "value": ""},
             ],
@@ -436,10 +448,14 @@ class UtilsCsvTestCase(unittest.TestCase):
         csv = csviter(response, headers=[h.decode("utf-8") for h in headers])
 
         self.assertEqual(
-            [row for row in csv],
+            list(csv),
             [
                 {"id": "1", "name": "alpha", "value": "foobar"},
-                {"id": "2", "name": "unicode", "value": "\xfan\xedc\xf3d\xe9\u203d"},
+                {
+                    "id": "2",
+                    "name": "unicode",
+                    "value": "\xfan\xedc\xf3d\xe9\u203d",
+                },
                 {"id": "3", "name": "multi", "value": "foo\nbar"},
                 {"id": "4", "name": "empty", "value": ""},
             ],
@@ -453,10 +469,14 @@ class UtilsCsvTestCase(unittest.TestCase):
         csv = csviter(response)
 
         self.assertEqual(
-            [row for row in csv],
+            list(csv),
             [
                 {"id": "1", "name": "alpha", "value": "foobar"},
-                {"id": "2", "name": "unicode", "value": "\xfan\xedc\xf3d\xe9\u203d"},
+                {
+                    "id": "2",
+                    "name": "unicode",
+                    "value": "\xfan\xedc\xf3d\xe9\u203d",
+                },
                 {"id": "3", "name": "multi", "value": "foo\nbar"},
                 {"id": "4", "name": "empty", "value": ""},
             ],

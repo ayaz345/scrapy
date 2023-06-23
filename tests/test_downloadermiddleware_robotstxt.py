@@ -118,18 +118,21 @@ Disallow: /some/randome/page.html
     def test_robotstxt_garbage(self):
         # garbage response should be discarded, equal 'allow all'
         middleware = RobotsTxtMiddleware(self._get_garbage_crawler())
-        deferred = DeferredList(
+        return DeferredList(
             [
                 self.assertNotIgnored(Request("http://site.local"), middleware),
-                self.assertNotIgnored(Request("http://site.local/allowed"), middleware),
+                self.assertNotIgnored(
+                    Request("http://site.local/allowed"), middleware
+                ),
                 self.assertNotIgnored(
                     Request("http://site.local/admin/main"), middleware
                 ),
-                self.assertNotIgnored(Request("http://site.local/static/"), middleware),
+                self.assertNotIgnored(
+                    Request("http://site.local/static/"), middleware
+                ),
             ],
             fireOnOneErrback=True,
         )
-        return deferred
 
     def _get_emptybody_crawler(self):
         crawler = self.crawler

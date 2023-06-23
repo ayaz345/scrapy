@@ -59,7 +59,7 @@ class CmdlineTest(unittest.TestCase):
             "--get",
             "EXTENSIONS",
             "-s",
-            "EXTENSIONS=" + json.dumps(EXTENSIONS),
+            f"EXTENSIONS={json.dumps(EXTENSIONS)}",
         )
         # XXX: There's gotta be a smarter way to do this...
         self.assertNotIn("...", settingsstr)

@@ -373,6 +373,4 @@ def maybe_deferred_to_future(d: Deferred) -> Union[Deferred, Future]:
                 deferred = self.crawler.engine.download(additional_request)
                 additional_response = await maybe_deferred_to_future(deferred)
     """
-    if not is_asyncio_reactor_installed():
-        return d
-    return deferred_to_future(d)
+    return d if not is_asyncio_reactor_installed() else deferred_to_future(d)

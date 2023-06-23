@@ -84,26 +84,35 @@ class ParseUrlTestCase(unittest.TestCase):
             ),
             (
                 "http://127.0.0.1:100?c=v&c2=v2#fragment",
-                ("http", lip + ":100", lip, 100, "/?c=v&c2=v2"),
+                ("http", f"{lip}:100", lip, 100, "/?c=v&c2=v2"),
             ),
             (
                 "http://127.0.0.1:100/?c=v&c2=v2#frag",
-                ("http", lip + ":100", lip, 100, "/?c=v&c2=v2"),
+                ("http", f"{lip}:100", lip, 100, "/?c=v&c2=v2"),
             ),
             (
                 "http://127.0.0.1:100/foo?c=v&c2=v2#frag",
-                ("http", lip + ":100", lip, 100, "/foo?c=v&c2=v2"),
+                ("http", f"{lip}:100", lip, 100, "/foo?c=v&c2=v2"),
             ),
             ("http://127.0.0.1", ("http", lip, lip, 80, "/")),
             ("http://127.0.0.1/", ("http", lip, lip, 80, "/")),
             ("http://127.0.0.1/foo", ("http", lip, lip, 80, "/foo")),
-            ("http://127.0.0.1?param=value", ("http", lip, lip, 80, "/?param=value")),
-            ("http://127.0.0.1/?param=value", ("http", lip, lip, 80, "/?param=value")),
+            (
+                "http://127.0.0.1?param=value",
+                ("http", lip, lip, 80, "/?param=value"),
+            ),
+            (
+                "http://127.0.0.1/?param=value",
+                ("http", lip, lip, 80, "/?param=value"),
+            ),
             (
                 "http://127.0.0.1:12345/foo",
-                ("http", lip + ":12345", lip, 12345, "/foo"),
+                ("http", f"{lip}:12345", lip, 12345, "/foo"),
             ),
-            ("http://spam:12345/foo", ("http", "spam:12345", "spam", 12345, "/foo")),
+            (
+                "http://spam:12345/foo",
+                ("http", "spam:12345", "spam", 12345, "/foo"),
+            ),
             (
                 "http://spam.test.org/foo",
                 ("http", "spam.test.org", "spam.test.org", 80, "/foo"),
@@ -113,7 +122,10 @@ class ParseUrlTestCase(unittest.TestCase):
                 "https://127.0.0.1/?param=value",
                 ("https", lip, lip, 443, "/?param=value"),
             ),
-            ("https://127.0.0.1:12345/", ("https", lip + ":12345", lip, 12345, "/")),
+            (
+                "https://127.0.0.1:12345/",
+                ("https", f"{lip}:12345", lip, 12345, "/"),
+            ),
             (
                 "http://scrapytest.org/foo ",
                 ("http", "scrapytest.org", "scrapytest.org", 80, "/foo"),
